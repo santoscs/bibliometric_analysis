@@ -1,0 +1,95 @@
+---
+title: "bibliometric analysis"
+author: "Cristiano da SIlva Santos"
+date: "4/13/2024"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+## Bibliographic Collection
+
+**Data source**:   Scopus 
+**Data format**:   Csv
+**Query**:         (innovation OR innovate) AND ("public sector" OR "public administration" OR "public management" OR "public organisation" OR "public service") INTERSECT “Public Innovation” OR “Public Sector Innovation” OR “Government Innovation” OR “Public Service Innovation” OR “Innovation in Public Administration” OR “Innovation Management in Public Sector” OR “Public Sector Technology Innovation” OR “Government Policy Innovation” AND NOT “Government Innovation Support”
+**Timespan**:      -2023
+**Document Type**: Articles  
+**Search fields**: Titles
+**Query data**:     01/03/2024
+
+```{r import}
+library(bibliometrix)
+library(akc)
+library(BibPlots)
+library(dplyr)
+M <- convert2df("../data/raw_data/2024_scopus_public_inovation.csv", dbsource="scopus",format="csv")
+M <- M[M$PY <= 2023, ]
+results <- biblioAnalysis(M)
+resumo <- summary(results, verbose = FALSE)
+
+```
+
+
+## Section 1: Descriptive Analysis
+
+### Main information about data 
+
+```{r main information, echo=TRUE, comment=NA}
+tab <- resumo$MainInformationDF
+tab <- tab[-1,]
+rownames(tab) <- NULL
+knitr::kable(tab)
+```
+
+### Most Productive Authors
+
+```{r Most Productive Authors, echo=TRUE, comment=NA}
+tab <- resumo$MostProdAuthors
+knitr::kable(tab)
+```
+
+### Country Publications
+
+```{r Country Publications, echo=TRUE, comment=NA}
+tab1 <- resumo$MostProdCountries
+tab2 <- resumo$TCperCountries
+knitr::kable(tab1)
+knitr::kable(tab2)
+```
+
+### Most Relevant Sources
+
+```{r Most Relevant Sources, echo=TRUE, comment=NA}
+tab <- resumo$MostRelSources
+knitr::kable(tab)
+```
+
+
+
+### keyword co-occurrence
+```{r keyword co-occurrence, echo=TRUE, comment=NA}
+M %>% 
+  keyword_clean(id = "DI",
+  keyword = "DE",
+  sep = ";",
+ ) -> clean_data
+#Merge keywords that have common stem or lemma, and return the majority form of the word
+clean_data %>% 
+  keyword_merge() -> merged_data
+
+
+merged_data %>% 
+  keyword_group(min_freq = 2) -> grouped_data
+
+grouped_data %>% 
+  keyword_vis()
+```
+
+
+
+
+

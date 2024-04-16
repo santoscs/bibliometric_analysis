@@ -1,0 +1,12 @@
+^figures$
+^data$
+^code$
+^products$
+^data/raw_data$
+^data/tidy_data$
+^code/raw_code$
+^code/final_code$
+^figures/exploratory_figures$
+^figures/explanatory_figures$
+^products/writing$
+^writing$
